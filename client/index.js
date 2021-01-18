@@ -78,13 +78,17 @@ console.log(brands);
 // 2. Create a variable and assign it the list of products by price from lowest to highest
 // 3. Log the variable
 
-const sort_by_price = (products) => products.sort(
+const sort_by = (get_attr) => (products) => [...products].sort( // copy array
     (first, second) => {
-        if (first.price < second.price) return -1;
-        if (first.price > second.price) return 1;
+        const first_attr = get_attr(first);
+        const second_attr = get_attr(second);
+        if (first_attr < second_attr) return -1;
+        if (first_attr > second_attr) return 1;
         return 0;
     }
 );
+
+const sort_by_price = sort_by(x => x.price);
 
 const products_sorted_price = sort_by_price(marketplace);
 console.log(products_sorted_price);
@@ -94,19 +98,31 @@ console.log(products_sorted_price);
 // 2. Create a variable and assign it the list of products by date from recent to old
 // 3. Log the variable
 
+const sort_by_date= sort_by(x => new Date(x.date))
+
+const products_sorted_date = sort_by_date(marketplace);
+console.log(products_sorted_date);
 
 // 🎯 TODO: Filter a specific price range
 // 1. Filter the list of products between 50€ and 100€
 // 2. Log the list
 
+const filter_in_range = (get_attr) => (lower) => (upper)  => 
+    (products) => products.filter(x => lower <= get_attr(x) && get_attr(x) <= upper);
+
+const filter_price_range = filter_in_range(x => x.price);
+const products_price_50_100 = filter_price_range(50)(100)(marketplace);
+console.log(products_price_50_100);
 
 // 🎯 TODO: Average Basket
 // 1. Determine the average basket of the marketplace
 // 2. Log the average
 
+const average = (arr) => (arr.length == 0) ? 0 : arr.reduce(
+    (first, second) => first + second, 0) / arr.length;
 
-
-
+const average_basket = average(marketplace.map(x => x.price));
+console.log(average_basket);
 
 /**
  * 🏎
@@ -130,6 +146,7 @@ console.log(products_sorted_price);
 //
 // 2. Log the variable
 // 3. Log the number of products by brands
+
 
 
 // 🎯 TODO: Sort by price for each brand
