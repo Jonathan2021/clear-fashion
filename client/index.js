@@ -34,9 +34,19 @@ console.log(MY_FAVORITE_BRANDS[0]);
 // I can find on these e-shops
 // 2. Log the variable
 
+const tshirts = marketplace.filter(
+    (x) => x.link.toLowerCase().includes("t-shirt")
+);
 
-
-
+if (tshirts.length == 0)
+    console.warn("No t-shirst in marketplace");
+else
+{
+    const cheapest = tshirts.reduce(
+        (prev, curr) => prev.price < curr.price ? prev : curr
+    );
+    console.log(cheapest);
+}
 
 /**
  * 👕
