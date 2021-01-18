@@ -147,11 +147,36 @@ console.log(average_basket);
 // 2. Log the variable
 // 3. Log the number of products by brands
 
+const group_by = (get_attr) => (arr) => arr.reduce((groups, item) =>
+    {
+        const group = (groups[get_attr(item)] || []);
+        group.push(item);
+        groups[get_attr(item)] = group;
+        return groups;
+    }, {});
 
+const group_by_brand = group_by(x => x.brand);
+
+const products_grouped_by_brand = group_by_brand(marketplace);
+console.log(products_grouped_by_brand);
 
 // 🎯 TODO: Sort by price for each brand
 // 1. For each brand, sort the products by price, from highest to lowest
 // 2. Log the sort
+
+const map_each_attribute = (mapping) => (object) =>
+{
+    for (const attr in object)
+    {
+        object[attr] = mapping(object[attr]);
+    }
+    return object;
+}
+
+const sort_price_attr = map_each_attribute(sort_by_price);
+
+const grouped_by_brand_sorted = sort_price_attr(group_by_brand(marketplace));
+console.log(grouped_by_brand_sorted)
 
 
 // 🎯 TODO: Sort by date for each brand
