@@ -61,18 +61,33 @@ else
 // 1. Create a variable and assign it the number of products
 // 2. Log the variable
 
+const nb_products_market = marketplace.length;
+console.log(nb_products_market);
+
 
 // 🎯 TODO: Brands name
 // 1. Create a variable and assign it the list of brands name only
 // 2. Log the variable
 // 3. Log how many brands we have
 
+const brands = [...new Set(marketplace.map( ({ brand }) => brand))]
+console.log(brands);
 
 // 🎯 TODO: Sort by price
 // 1. Create a function to sort the marketplace products by price
 // 2. Create a variable and assign it the list of products by price from lowest to highest
 // 3. Log the variable
 
+const sort_by_price = (products) => products.sort(
+    (first, second) => {
+        if (first.price < second.price) return -1;
+        if (first.price > second.price) return 1;
+        return 0;
+    }
+);
+
+const products_sorted_price = sort_by_price(marketplace);
+console.log(products_sorted_price);
 
 // 🎯 TODO: Sort by date
 // 1. Create a function to sort the marketplace objects by products date
