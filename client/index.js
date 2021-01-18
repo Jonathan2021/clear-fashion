@@ -175,17 +175,17 @@ const map_each_attribute = (mapping) => (object) =>
 
 const sort_price_attr = map_each_attribute(sort_by_price);
 
-const grouped_by_brand_sorted = sort_price_attr(group_by_brand(marketplace));
-console.log(grouped_by_brand_sorted)
+const grouped_by_brand_sorted_price = sort_price_attr(group_by_brand(marketplace));
+console.log(grouped_by_brand_sorted_price)
 
 
 // 🎯 TODO: Sort by date for each brand
 // 1. For each brand, sort the products by date, from old to recent
 // 2. Log the sort
 
-
-
-
+const sort_date_attr = map_each_attribute(sort_by_date);
+const grouped_by_brand_sorted_date = sort_date_attr(group_by_brand(marketplace));
+console.log(grouped_by_brand_sorted_date);
 
 /**
  * 💶
@@ -198,9 +198,17 @@ console.log(grouped_by_brand_sorted)
 // 1. Compute the p90 price value of each brand
 // The p90 value (90th percentile) is the lower value expected to be exceeded in 90% of the products
 
+const get_precentile = (get_attr) => (percentile) => (arr) =>
+{
+    const sorted = sort_by(get_attr)(arr);
+    const index = Math.ceil((1 - percentile / 100) * arr.length);
+    return get_attr(sorted[index]);
+};
 
-
-
+const get_price_percentile = get_precentile(x => x.price);
+const get_price_90_percentile = get_price_percentile(90);
+const price_90_percentile = get_price_90_percentile(marketplace);
+console.log(price_90_percentile);
 
 /**
  * 🧥
@@ -274,6 +282,12 @@ const COTELE_PARIS = [
 // // 1. Log if we have new products only (true or false)
 // // A new product is a product `released` less than 2 weeks.
 
+const filter_release_range = filter_in_range(x => new Date(x.release));
+
+const filter_release_2_weeks = filter_release_range(Date.now() - (14 * 24 * 60 * 60 * 1000))(Date.now());
+
+const cotele_new_release = filter_release_2_weeks(COTELE_PARIS);
+console.log(cotele_new_release);
 
 // 🎯 TODO: Reasonable price
 // // 1. Log if coteleparis is a reasonable price shop (true or false)
