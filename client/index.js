@@ -282,9 +282,9 @@ const COTELE_PARIS = [
 // // 1. Log if we have new products only (true or false)
 // // A new product is a product `released` less than 2 weeks.
 
-const filter_release_range = filter_in_range(x => new Date(x.release));
+const filter_release_range = filter_in_range(x => new Date(x.released));
 
-const filter_release_2_weeks = filter_release_range(Date.now() - (14 * 24 * 60 * 60 * 1000))(Date.now());
+const filter_release_2_weeks = filter_release_range(new Date(+new Date - 14*24*60*60*1000))(Date.now());
 
 const cotele_new_release = filter_release_2_weeks(COTELE_PARIS);
 console.log(cotele_new_release);
