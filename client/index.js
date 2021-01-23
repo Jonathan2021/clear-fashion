@@ -107,6 +107,7 @@ console.log(products_sorted_date);
 // 1. Filter the list of products between 50€ and 100€
 // 2. Log the list
 
+
 const filter_in_range = (get_attr) => (lower) => (upper)  => 
     (products) => products.filter(x => lower <= get_attr(x) && get_attr(x) <= upper);
 
@@ -293,15 +294,32 @@ console.log(cotele_new_release);
 // // 1. Log if coteleparis is a reasonable price shop (true or false)
 // // A reasonable price if all the products are less than 100€
 
+const all_verify = (get_attr) => (condition) => (array) => array.every(x => condition(get_attr(x)));
+
+const all_price_below_100 = all_verify(x => x.price)(x => x < 100);
+
+console.log(all_price_below_100(COTELE_PARIS));
+
 
 // 🎯 TODO: Find a specific product
 // 1. Find the product with the uuid `b56c6d88-749a-5b4c-b571-e5b5c6483131`
 // 2. Log the product
 
+const find_element_condition = (get_attr) => (condition) => (array) => array.find(x => condition(get_attr(x)));
+
+const find_product_on_uuid = find_element_condition(x => x.uuid);
+
+console.log(find_product_on_uuid(x => x == `b56c6d88-749a-5b4c-b571-e5b5c6483131`)(COTELE_PARIS)); 
 
 // 🎯 TODO: Delete a specific product
 // 1. Delete the product with the uuid `b56c6d88-749a-5b4c-b571-e5b5c6483131`
 // 2. Log the new list of product
+
+const remove_el_on_condition = (get_attr) => (condition) => (array) => array.filter(x => !condition(get_attr(x)));
+
+const remove_product_on_uuid = remove_el_on_condition(x => x.uuid);
+
+console.log(remove_product_on_uuid(x => x === `b56c6d88-749a-5b4c-b571-e5b5c6483131`)(COTELE_PARIS));
 
 // 🎯 TODO: Save the favorite product
 let blueJacket = {
@@ -318,6 +336,11 @@ jacket.favorite = true;
 // 1. Log `blueJacket` and `jacket` variables
 // 2. What do you notice?
 
+console.log(blueJacket);
+console.log(jacket);
+
+// I notice that they were both refering to the same object in memory
+
 blueJacket = {
   'link': 'https://coteleparis.com/collections/tous-les-produits-cotele/products/la-veste-bleu-roi',
   'price': 110,
@@ -326,8 +349,11 @@ blueJacket = {
 
 // 3. Update `jacket` property with `favorite` to true WITHOUT changing blueJacket properties
 
+jacket = {...blueJacket}
+jacket.favorite=true;
 
-
+console.log(blueJacket);
+console.log(jacket);
 
 
 /**
@@ -339,3 +365,6 @@ blueJacket = {
 // 🎯 TODO: Save in localStorage
 // 1. Save MY_FAVORITE_BRANDS in the localStorage
 // 2. log the localStorage
+
+const localStorage = {'fav_brands': MY_FAVORITE_BRANDS};
+console.log(localStorage);
