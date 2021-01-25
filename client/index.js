@@ -70,7 +70,8 @@ console.log(nb_products_market);
 // 2. Log the variable
 // 3. Log how many brands we have
 
-const brands = [...new Set(marketplace.map( ({ brand }) => brand))]
+const get_brands = (products) => [...new Set(products.map( ({ brand }) => brand))];
+const brands = get_brands(marketplace);
 console.log(brands);
 
 // 🎯 TODO: Sort by price
@@ -106,7 +107,6 @@ console.log(products_sorted_date);
 // 🎯 TODO: Filter a specific price range
 // 1. Filter the list of products between 50€ and 100€
 // 2. Log the list
-
 
 const filter_in_range = (get_attr) => (lower) => (upper)  => 
     (products) => products.filter(x => lower <= get_attr(x) && get_attr(x) <= upper);
@@ -368,3 +368,9 @@ console.log(jacket);
 
 const localStorage = {'fav_brands': MY_FAVORITE_BRANDS};
 console.log(localStorage);
+
+// EXTRA FUNCTIONS
+
+const filter_on = (get_attr) => (condition) => (array) => array.filter(x => condition(get_attr(x)));
+
+const filter_on_brand = filter_on(x => x.brand);
