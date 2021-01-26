@@ -10,6 +10,7 @@ const noChange = (array) => array;
 // current products on the page
 let currentProducts = [];
 let currentPagination = {};
+let allBrands = [];
 let filters = {
     'brand' : {'currentChange' : noChange, 'currentValue' : allBrandsOption, 'defaultChange' : noChange, 'defaultValue' : allBrandsOption},
     'price' : { 'currentChange' : noChange, 'currentValue' : checkedPrice, 'defaultChange' : noChange, 'defaultValue' : checkedPrice},
@@ -78,6 +79,30 @@ const fetchProducts = async (page = 1, size = 12) => {
     }
 };
 
+const fetchBrands = async () => {
+    try
+    {
+        const response = await fetch(
+            `https://clear-fashion-api.vercel.app/brands`
+        );
+        
+        const body = await response.json();
+
+        if (body.success !== true) {
+            console.error(body);
+            return brands;
+        }
+
+        return body.data.result;
+
+
+    }
+    catch (error) {
+        console.error(error);
+        return brands;
+    }
+};
+
 /**
  * Render list of products
  * @param  {Array} products
@@ -122,7 +147,7 @@ const renderPagination = pagination => {
  * Render Brand selector
  * @param [brands]
  */
-const renderBrands = (brands, value = filters.brand.currentValue) => {
+const renderBrands = (brands = allBrands, value = filters.brand.currentValue) => {
     brands.sort();
     const choices = brands
         .map(brand =>
@@ -131,7 +156,7 @@ const renderBrands = (brands, value = filters.brand.currentValue) => {
         .join('\n');
     selectBrand.innerHTML = [`<option value="${filters.brand.defaultValue}">${filters.brand.defaultValue}</option>`, choices].join('\n');
     selectBrand.value = value;
-}
+};
 
 
 /**
@@ -147,7 +172,7 @@ const renderIndicators = pagination => {
 const render = (products, pagination) => {
     //console.log(filters);
     //console.log(filter_on_brand(x => x == "adresse")(currentProducts));
-    renderBrands(get_brands(currentProducts));
+    renderBrands();
     renderProducts(apply_filters(products));
     renderPagination(pagination);
     renderIndicators(pagination);
@@ -172,7 +197,7 @@ selectShow.addEventListener('change', event => {
  * @type {[type]}
  */
 selectPage.addEventListener('change', event => {
-    fetchProducts(parseInt(event.target), currentPagination.pageSize)
+    fetchProducts(parseInt(event.target.value), currentPagination.pageSize)
         .then(setCurrentProducts)
         .then(() => render(currentProducts, currentPagination));
 });
@@ -233,7 +258,9 @@ checkPrice.addEventListener('change', event => {
  */
 
 document.addEventListener('DOMContentLoaded', () =>
+{
+    fetchBrands().then(brands => allBrands = brands);
     fetchProducts()
     .then(setCurrentProducts)
-    .then(() => render(currentProducts, currentPagination))
-);
+    .then(() => render(currentProducts, currentPagination));
+});
