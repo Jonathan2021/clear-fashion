@@ -2,8 +2,8 @@
 'use strict';
 
 const allBrandsOption = "all";
-const allPriceOption = "all";
 const checkedNewRelease = false;
+const checkedPrice = false;
 const noSortOption = "all";
 const noChange = (array) => array;
 
@@ -12,7 +12,7 @@ let currentProducts = [];
 let currentPagination = {};
 let filters = {
     'brand' : {'currentChange' : noChange, 'currentValue' : allBrandsOption, 'defaultChange' : noChange, 'defaultValue' : allBrandsOption},
-    'price' : { 'currentChange' : noChange, 'currentValue' : allPriceOption, 'defaultChange' : noChange, 'defaultValue' : allPriceOption},
+    'price' : { 'currentChange' : noChange, 'currentValue' : checkedPrice, 'defaultChange' : noChange, 'defaultValue' : checkedPrice},
     'new_release' : { 'currentChange' : noChange, 'currentValue' : checkedNewRelease, 'defaultChange' : noChange, 'defaultValue' : checkedNewRelease},
     'Sort' : { 'currentChange' : noChange, 'currentValue' : noSortOption, 'defaultChange' : noChange, 'defaultValue' : noSortOption},
 };
@@ -23,6 +23,7 @@ const selectShow = document.querySelector('#show-select');
 const selectPage = document.querySelector('#page-select');
 const selectBrand = document.querySelector('#brand-select');
 const checkNewReleases = document.querySelector('#new-release-check');
+const checkPrice = document.querySelector('#price-check');
 const sectionProducts = document.querySelector('#products');
 const spanNbProducts = document.querySelector('#nbProducts');
 
@@ -207,6 +208,22 @@ checkNewReleases.addEventListener('change', event => {
     else
     {
         filters.new_release.currentChange =  filters.new_release.defaultChange;
+    }
+    render(currentProducts, currentPagination);
+});
+
+/**
+ * Filter price
+ */
+checkPrice.addEventListener('change', event => {
+    filters.price.currentValue = checkPrice.checked;
+    if (checkPrice.checked)
+    {
+        filters.price.currentChange = filter_price_range(0)(50);
+    }
+    else
+    {
+        filters.price.currentChange =  filters.price.defaultChange;
     }
     render(currentProducts, currentPagination);
 });
