@@ -2,16 +2,27 @@
 'use strict';
 
 const allBrandsOption = "all";
+const allPriceOption = "all";
+const checkedNewRelease = false;
+const noSortOption = "all";
+const noChange = (array) => array;
 
 // current products on the page
 let currentProducts = [];
 let currentPagination = {};
-let currentBrand = allBrandsOption;
+let filters = {
+    'brand' : {'currentChange' : noChange, 'currentValue' : allBrandsOption, 'defaultChange' : noChange, 'defaultValue' : allBrandsOption},
+    'price' : { 'currentChange' : noChange, 'currentValue' : allPriceOption, 'defaultChange' : noChange, 'defaultValue' : allPriceOption},
+    'new_release' : { 'currentChange' : noChange, 'currentValue' : checkedNewRelease, 'defaultChange' : noChange, 'defaultValue' : checkedNewRelease},
+    'Sort' : { 'currentChange' : noChange, 'currentValue' : noSortOption, 'defaultChange' : noChange, 'defaultValue' : noSortOption},
+};
+
 
 // inititiqte selectors
 const selectShow = document.querySelector('#show-select');
 const selectPage = document.querySelector('#page-select');
 const selectBrand = document.querySelector('#brand-select');
+const checkNewReleases = document.querySelector('#new-release-check');
 const sectionProducts = document.querySelector('#products');
 const spanNbProducts = document.querySelector('#nbProducts');
 
@@ -24,6 +35,22 @@ const setCurrentProducts = ({result, meta}) => {
     currentProducts = result;
     currentPagination = meta;
 };
+
+/**
+ * Apply all filters to array
+ */
+const apply_filters = ([...array], all_filters = filters, get_filter = x => x.currentChange) => {
+    for (const filter of Object.values(all_filters))
+    {
+        //console.log(array);
+        //console.log(filter);
+        //console.log(get_filter(filter));
+        //console.log(get_filter(filter)(currentProducts));
+        array = get_filter(filter)(array);
+    }
+    return array;
+};
+
 
 /**
  * Fetch products from api
@@ -94,14 +121,14 @@ const renderPagination = pagination => {
  * Render Brand selector
  * @param [brands]
  */
-const renderBrands = (brands, value) => {
+const renderBrands = (brands, value = filters.brand.currentValue) => {
     brands.sort();
     const choices = brands
         .map(brand =>
             `<option value="${brand}">${brand}</option>`
         )
         .join('\n');
-    selectBrand.innerHTML = [`<option value="${allBrandsOption}">${allBrandsOption}</option>`, choices].join('\n');
+    selectBrand.innerHTML = [`<option value="${filters.brand.defaultValue}">${filters.brand.defaultValue}</option>`, choices].join('\n');
     selectBrand.value = value;
 }
 
@@ -117,8 +144,10 @@ const renderIndicators = pagination => {
 };
 
 const render = (products, pagination) => {
-    renderBrands(get_brands(currentProducts), currentBrand);
-    renderProducts(products);
+    //console.log(filters);
+    //console.log(filter_on_brand(x => x == "adresse")(currentProducts));
+    renderBrands(get_brands(currentProducts));
+    renderProducts(apply_filters(products));
     renderPagination(pagination);
     renderIndicators(pagination);
 };
@@ -151,13 +180,35 @@ selectPage.addEventListener('change', event => {
  * Filter by brand
  * 
  */
-selectBrand.addEventListener('change', event => { 
-    console.log(event.target);
-    const products = (event.target.value !== allBrandsOption) ?
-        filter_on_brand(x => x === event.target.value)(currentProducts)
-        : currentProducts;
-    currentBrand = event.target.value;
-    render(products, currentPagination);
+selectBrand.addEventListener('change', event => {
+    //console.log(event.target.value);
+    if (event.target.value !== filters.brand.defaultValue)
+    {
+        filters.brand.currentValue = event.target.value;
+        filters.brand.currentChange = filter_on_brand(x => x === filters.brand.currentValue);
+    }
+    else
+    {
+        filters.brand.currentChange = filters.brand.defaultChange;
+        filters.brand.currentValue = filters.brand.defaultValue;
+    }
+    render(currentProducts, currentPagination);
+});
+
+/**
+ * Filter new release
+ */
+checkNewReleases.addEventListener('change', event => {
+    filters.new_release.currentValue = checkNewReleases.checked;
+    if (checkNewReleases.checked)
+    {
+        filters.new_release.currentChange = filter_release_2_weeks;
+    }
+    else
+    {
+        filters.new_release.currentChange =  filters.new_release.defaultChange;
+    }
+    render(currentProducts, currentPagination);
 });
 
 /**
