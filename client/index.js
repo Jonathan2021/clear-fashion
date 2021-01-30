@@ -79,30 +79,33 @@ console.log(brands);
 // 2. Create a variable and assign it the list of products by price from lowest to highest
 // 3. Log the variable
 
-const sort_by = (get_attr) => (products) => [...products].sort( // copy array
+const sort_by = (order = 1) => (get_attr) => (products) => [...products].sort( // copy array
     (first, second) => {
         const first_attr = get_attr(first);
         const second_attr = get_attr(second);
-        if (first_attr < second_attr) return -1;
-        if (first_attr > second_attr) return 1;
+        if (first_attr < second_attr) return -1 * order;
+        if (first_attr > second_attr) return 1 * order;
         return 0;
     }
 );
 
-const sort_by_price = sort_by(x => x.price);
+const sort_by_ascending = sort_by();
+const sort_by_descending = sort_by(-1);
 
-const products_sorted_price = sort_by_price(marketplace);
-console.log(products_sorted_price);
+const sort_by_ascending_price = sort_by_ascending(x => x.price);
+
+const products_sorted_ascending_price = sort_by_ascending_price(marketplace);
+console.log(products_sorted_ascending_price);
 
 // 🎯 TODO: Sort by date
 // 1. Create a function to sort the marketplace objects by products date
 // 2. Create a variable and assign it the list of products by date from recent to old
 // 3. Log the variable
 
-const sort_by_date= sort_by(x => new Date(x.date))
+const sort_by_ascending_date = sort_by_ascending(x => new Date(x.date))
 
-const products_sorted_date = sort_by_date(marketplace);
-console.log(products_sorted_date);
+const products_sorted_ascending_date = sort_by_ascending_date(marketplace);
+console.log(products_sorted_ascending_date);
 
 // 🎯 TODO: Filter a specific price range
 // 1. Filter the list of products between 50€ and 100€
@@ -174,19 +177,19 @@ const map_each_attribute = (mapping) => (object) =>
     return object;
 }
 
-const sort_price_attr = map_each_attribute(sort_by_price);
+const sort_ascending_price_attr = map_each_attribute(sort_by_ascending_price);
 
-const grouped_by_brand_sorted_price = sort_price_attr(group_by_brand(marketplace));
-console.log(grouped_by_brand_sorted_price)
+const grouped_by_brand_sorted_ascending_price = sort_ascending_price_attr(group_by_brand(marketplace));
+console.log(grouped_by_brand_sorted_ascending_price)
 
 
 // 🎯 TODO: Sort by date for each brand
 // 1. For each brand, sort the products by date, from old to recent
 // 2. Log the sort
 
-const sort_date_attr = map_each_attribute(sort_by_date);
-const grouped_by_brand_sorted_date = sort_date_attr(group_by_brand(marketplace));
-console.log(grouped_by_brand_sorted_date);
+const sort_ascending_date_attr = map_each_attribute(sort_by_ascending_date);
+const grouped_by_brand_sorted_ascending_date = sort_ascending_date_attr(group_by_brand(marketplace));
+console.log(grouped_by_brand_sorted_ascending_date);
 
 /**
  * 💶
@@ -201,7 +204,7 @@ console.log(grouped_by_brand_sorted_date);
 
 const get_precentile = (get_attr) => (percentile) => (arr) =>
 {
-    const sorted = sort_by(get_attr)(arr);
+    const sorted = sort_by_ascending(get_attr)(arr);
     const index = Math.ceil((1 - percentile / 100) * arr.length);
     return get_attr(sorted[index]);
 };

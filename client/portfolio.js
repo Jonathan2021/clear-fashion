@@ -4,7 +4,15 @@
 const allBrandsOption = "all";
 const checkedNewRelease = false;
 const checkedPrice = false;
-const noSortOption = "all";
+
+const sortings = {
+    'price-asc' : {'func': sort_by_ascending_price, 'repr': "Cheap"},
+    'price-desc' : {'func':sort_by_descending(x => x.price), 'repr': "Expensive"},
+    'date-desc' : {'func': sort_by_descending(x => new Date(x.released)), 'repr': "Recent released"},
+    'date-asc': {'func': sort_by_ascending(x => new Date(x.released)), 'repr': "Old release"}
+};
+const defaultSortOption = "price-asc";
+
 const noChange = (array) => array;
 
 // current products on the page
@@ -15,7 +23,7 @@ let filters = {
     'brand' : {'currentChange' : noChange, 'currentValue' : allBrandsOption, 'defaultChange' : noChange, 'defaultValue' : allBrandsOption},
     'price' : { 'currentChange' : noChange, 'currentValue' : checkedPrice, 'defaultChange' : noChange, 'defaultValue' : checkedPrice},
     'new_release' : { 'currentChange' : noChange, 'currentValue' : checkedNewRelease, 'defaultChange' : noChange, 'defaultValue' : checkedNewRelease},
-    'Sort' : { 'currentChange' : noChange, 'currentValue' : noSortOption, 'defaultChange' : noChange, 'defaultValue' : noSortOption},
+    'sort' : { 'currentChange' : sortings[defaultSortOption].func, 'currentValue' : defaultSortOption, 'defaultChange' : sortings[defaultSortOption].func, 'defaultValue' : defaultSortOption},
 };
 
 
@@ -27,6 +35,7 @@ const checkNewReleases = document.querySelector('#new-release-check');
 const checkPrice = document.querySelector('#price-check');
 const sectionProducts = document.querySelector('#products');
 const spanNbProducts = document.querySelector('#nbProducts');
+const selectSorting = document.querySelector('#sort-select');
 
 /**
  * Set global value
@@ -44,10 +53,6 @@ const setCurrentProducts = ({result, meta}) => {
 const apply_filters = ([...array], all_filters = filters, get_filter = x => x.currentChange) => {
     for (const filter of Object.values(all_filters))
     {
-        //console.log(array);
-        //console.log(filter);
-        //console.log(get_filter(filter));
-        //console.log(get_filter(filter)(currentProducts));
         array = get_filter(filter)(array);
     }
     return array;
@@ -158,6 +163,18 @@ const renderBrands = (brands = allBrands, value = filters.brand.currentValue) =>
     selectBrand.value = value;
 };
 
+/*
+ * Render Sorting selector
+ */
+
+const renderSorting = (value = defaultSortOption) => {
+    selectSorting.innerHTML = Object.entries(sortings)
+        .map(([value, {repr}]) =>
+            `<option value="${value}">${repr}</option>`
+        )
+        .join('\n');
+    selectSorting.value = value;
+};
 
 /**
  * Render page selector
@@ -169,13 +186,14 @@ const renderIndicators = pagination => {
     spanNbProducts.innerHTML = count;
 };
 
-const render = (products, pagination) => {
+const render = (products = currentProducts, pagination = currentPagination) => {
     //console.log(filters);
     //console.log(filter_on_brand(x => x == "adresse")(currentProducts));
-    renderBrands();
+    //renderBrands();
     renderProducts(apply_filters(products));
     renderPagination(pagination);
     renderIndicators(pagination);
+    console.log(apply_filters(products));
 };
 
 /**
@@ -189,7 +207,7 @@ const render = (products, pagination) => {
 selectShow.addEventListener('change', event => {
     fetchProducts(currentPagination.currentPage, parseInt(event.target.value))
         .then(setCurrentProducts)
-        .then(() => render(currentProducts, currentPagination));
+        .then(render);
 });
 
 /**
@@ -199,7 +217,7 @@ selectShow.addEventListener('change', event => {
 selectPage.addEventListener('change', event => {
     fetchProducts(parseInt(event.target.value), currentPagination.pageSize)
         .then(setCurrentProducts)
-        .then(() => render(currentProducts, currentPagination));
+        .then(render);
 });
 
 /**
@@ -218,7 +236,7 @@ selectBrand.addEventListener('change', event => {
         filters.brand.currentChange = filters.brand.defaultChange;
         filters.brand.currentValue = filters.brand.defaultValue;
     }
-    render(currentProducts, currentPagination);
+    render();
 });
 
 /**
@@ -234,7 +252,7 @@ checkNewReleases.addEventListener('change', event => {
     {
         filters.new_release.currentChange =  filters.new_release.defaultChange;
     }
-    render(currentProducts, currentPagination);
+    render();
 });
 
 /**
@@ -250,7 +268,16 @@ checkPrice.addEventListener('change', event => {
     {
         filters.price.currentChange =  filters.price.defaultChange;
     }
-    render(currentProducts, currentPagination);
+    render();
+});
+
+/**
+ *
+ */
+selectSorting.addEventListener('change', event => {
+    filters.sort.currentValue = event.target.value;
+    filters.sort.currentChange = sortings[event.target.value].func;
+    render();
 });
 
 /**
@@ -259,8 +286,9 @@ checkPrice.addEventListener('change', event => {
 
 document.addEventListener('DOMContentLoaded', () =>
 {
-    fetchBrands().then(brands => allBrands = brands);
+    fetchBrands().then(brands => allBrands = brands).then(renderBrands);
     fetchProducts()
     .then(setCurrentProducts)
-    .then(() => render(currentProducts, currentPagination));
+    .then(render);
+    renderSorting();
 });
