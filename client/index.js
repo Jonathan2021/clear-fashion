@@ -205,12 +205,12 @@ console.log(grouped_by_brand_sorted_ascending_date);
 const get_precentile = (get_attr) => (percentile) => (arr) =>
 {
     const sorted = sort_by_ascending(get_attr)(arr);
-    const index = Math.ceil((1 - percentile / 100) * arr.length);
+    const index = Math.min(Math.ceil(percentile / 100 * arr.length), arr.length - 1);
     return get_attr(sorted[index]);
 };
 
 const get_price_percentile = get_precentile(x => x.price);
-const get_price_90_percentile = get_price_percentile(90);
+const get_price_90_percentile = get_price_percentile(10);
 const price_90_percentile = get_price_90_percentile(marketplace);
 console.log(price_90_percentile);
 
@@ -377,3 +377,7 @@ console.log(localStorage);
 const filter_on = (get_attr) => (condition) => (array) => array.filter(x => condition(get_attr(x)));
 
 const filter_on_brand = filter_on(x => x.brand);
+
+// Error if empty array
+const get_min = (get_attr) => (array) => sort_by_ascending(get_attr)(array)[0];
+const get_max = (get_attr) => (array) => sort_by_descending(get_attr)(array)[0];

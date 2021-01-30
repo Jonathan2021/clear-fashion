@@ -3,6 +3,7 @@
 
 const allBrandsOption = "all";
 const checkedNewRelease = false;
+const new_release_filter = filter_release_2_weeks;
 const checkedPrice = false;
 
 const sortings = {
@@ -35,6 +36,12 @@ const checkNewReleases = document.querySelector('#new-release-check');
 const checkPrice = document.querySelector('#price-check');
 const sectionProducts = document.querySelector('#products');
 const spanNbProducts = document.querySelector('#nbProducts');
+const spanNbProductsDisplayed = document.querySelector('#nbProductsDisplayed');
+const spanNbProductsNewDisplayed = document.querySelector('#nbProductsNewDisplayed');
+const spanp50PriceValue = document.querySelector('#p50PriceValue');
+const spanp90PriceValue = document.querySelector('#p90PriceValue');
+const spanp95PriceValue = document.querySelector('#p95PriceValue');
+const spanLastReleaseDate = document.querySelector('#lastReleaseDate');
 const selectSorting = document.querySelector('#sort-select');
 
 /**
@@ -126,6 +133,7 @@ const renderProducts = products => {
     `;
         })
         .join('');
+    //template = [`Displayed : ${product.length}`, template].join('\n');
 
     div.innerHTML = template;
     fragment.appendChild(div);
@@ -180,20 +188,41 @@ const renderSorting = (value = defaultSortOption) => {
  * Render page selector
  * @param  {Object} pagination
  */
-const renderIndicators = pagination => {
+const renderIndicators = (pagination, displayed_products) => {
     const {count} = pagination;
 
     spanNbProducts.innerHTML = count;
+    spanNbProductsDisplayed.innerHTML = displayed_products.length;
+    spanNbProductsNewDisplayed.innerHTML = new_release_filter(displayed_products).length;
+    if (displayed_products.length > 0)
+    {
+        spanp50PriceValue.innerHTML = get_price_percentile(50)(displayed_products);
+        spanp50PriceValue.style.display = "inline";
+        spanp90PriceValue.innerHTML = get_price_percentile(10)(displayed_products);
+        spanp90PriceValue.style.display = "inline";
+        spanp95PriceValue.innerHTML = get_price_percentile(5)(displayed_products);
+        spanp95PriceValue.style.display = "inline";
+        spanLastReleaseDate.innerHTML = get_max(x => new Date(x.released))(displayed_products).released;
+        spanLastReleaseDate.style.display = "inline";
+    }
+    else
+    {
+        spanp50PriceValue.style.display = "none";
+        spanp90PriceValue.style.display = "none";
+        spanp95PriceValue.style.display = "none";
+        spanLastReleaseDate.style.display = "none";
+    }
 };
 
 const render = (products = currentProducts, pagination = currentPagination) => {
     //console.log(filters);
     //console.log(filter_on_brand(x => x == "adresse")(currentProducts));
     //renderBrands();
-    renderProducts(apply_filters(products));
+    const displayed_products = apply_filters(products);
+    renderProducts(displayed_products);
     renderPagination(pagination);
-    renderIndicators(pagination);
-    console.log(apply_filters(products));
+    renderIndicators(pagination, displayed_products);
+    console.log(displayed_products);
 };
 
 /**
@@ -246,7 +275,7 @@ checkNewReleases.addEventListener('change', event => {
     filters.new_release.currentValue = checkNewReleases.checked;
     if (checkNewReleases.checked)
     {
-        filters.new_release.currentChange = filter_release_2_weeks;
+        filters.new_release.currentChange = new_release_filter;
     }
     else
     {
