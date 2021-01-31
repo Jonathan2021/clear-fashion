@@ -320,9 +320,9 @@ console.log(find_product_on_uuid(x => x == `b56c6d88-749a-5b4c-b571-e5b5c6483131
 
 const remove_el_on_condition = (get_attr) => (condition) => (array) => array.filter(x => !condition(get_attr(x)));
 
-const remove_product_on_uuid = remove_el_on_condition(x => x.uuid);
+const remove_product_on_uuid = (uuid) => remove_el_on_condition(x => x.uuid)(x => x === uuid);
 
-console.log(remove_product_on_uuid(x => x === `b56c6d88-749a-5b4c-b571-e5b5c6483131`)(COTELE_PARIS));
+console.log(remove_product_on_uuid(`b56c6d88-749a-5b4c-b571-e5b5c6483131`)(COTELE_PARIS));
 
 // 🎯 TODO: Save the favorite product
 let blueJacket = {

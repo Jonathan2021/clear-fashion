@@ -3,6 +3,7 @@
 
 const allBrandsOption = "all";
 const checkedNewRelease = false;
+const checkedFavoritesOnly = false;
 const new_release_filter = filter_release_2_weeks;
 const checkedPrice = false;
 
@@ -20,11 +21,13 @@ const noChange = (array) => array;
 let currentProducts = [];
 let currentPagination = {};
 let allBrands = [];
+let favorites = [];
 let filters = {
     'brand' : {'currentChange' : noChange, 'currentValue' : allBrandsOption, 'defaultChange' : noChange, 'defaultValue' : allBrandsOption},
     'price' : { 'currentChange' : noChange, 'currentValue' : checkedPrice, 'defaultChange' : noChange, 'defaultValue' : checkedPrice},
     'new_release' : { 'currentChange' : noChange, 'currentValue' : checkedNewRelease, 'defaultChange' : noChange, 'defaultValue' : checkedNewRelease},
     'sort' : { 'currentChange' : sortings[defaultSortOption].func, 'currentValue' : defaultSortOption, 'defaultChange' : sortings[defaultSortOption].func, 'defaultValue' : defaultSortOption},
+    'favorite' : { 'currentChange' : noChange, 'currentValue' : checkedFavoritesOnly, 'defaultChange' : noChange, 'defaultValue' : checkedFavoritesOnly},
 };
 
 
@@ -32,6 +35,7 @@ let filters = {
 const selectShow = document.querySelector('#show-select');
 const selectPage = document.querySelector('#page-select');
 const selectBrand = document.querySelector('#brand-select');
+const checkFavoritesOnly = document.querySelector('#only-favorites-check');
 const checkNewReleases = document.querySelector('#new-release-check');
 const checkPrice = document.querySelector('#price-check');
 const sectionProducts = document.querySelector('#products');
@@ -124,16 +128,18 @@ const renderProducts = products => {
     const div = document.createElement('div');
     const template = products
         .map(product => {
-            return `
+            return (`
       <div class="product" id=${product.uuid}>
         <span>${product.brand}</span>
-        <a href="${product.link}">${product.name}</a>
-        <span>${product.price}</span>
-      </div>
-    `;
+        <a href="${product.link}" target="_blank">${product.name}</a>
+        <span>${product.price}</span>\n`).concat(
+            (favorites.includes(product)) ?
+            `<span><button onclick="removeFavoriteClick('${product.uuid}')">Remove favorite</button></span>` :
+            `<span><button onclick="addFavoriteClick('${product.uuid}')">Add favorite</button></span>`
+
+        ).concat('\n</div>');
         })
         .join('');
-    //template = [`Displayed : ${product.length}`, template].join('\n');
 
     div.innerHTML = template;
     fragment.appendChild(div);
@@ -225,6 +231,18 @@ const render = (products = currentProducts, pagination = currentPagination) => {
     console.log(displayed_products);
 };
 
+const addFavoriteClick = (uuid) => {
+    favorites.push(currentProducts.find(x => x.uuid == uuid));
+    render();
+}
+
+const removeFavoriteClick = (uuid) => {
+    console.log(favorites.includes(uuid));
+    favorites = remove_product_on_uuid(uuid)(favorites);
+    render();
+}
+
+
 /**
  * Declaration of all Listeners
  */
@@ -264,6 +282,24 @@ selectBrand.addEventListener('change', event => {
     {
         filters.brand.currentChange = filters.brand.defaultChange;
         filters.brand.currentValue = filters.brand.defaultValue;
+    }
+    render();
+});
+
+/*
+ * Show only favorites
+ */
+const filter_favorites = (array) => array.filter(x => favorites.includes(x))
+
+checkFavoritesOnly.addEventListener('change', event => {
+    filters.favorite.currentValue = checkFavoritesOnly.checked;
+    if (checkFavoritesOnly.checked)
+    {
+        filters.favorite.currentChange = filter_favorites; 
+    }
+    else
+    {
+        filters.favorite.currentChange = noChange;
     }
     render();
 });
