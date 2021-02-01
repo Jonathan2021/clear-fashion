@@ -1,11 +1,21 @@
 /* eslint-disable no-console, no-process-exit */
 const dedicatedbrand = require('./sources/dedicatedbrand');
+const mudjeans = require('./sources/mudjeans');
+const adresseparis = require('./sources/adresseparis');
 
-async function sandbox (eshop = 'https://www.dedicatedbrand.com/en/men/news') {
+async function sandbox (brand='dedicated', eshop = 'https://www.dedicatedbrand.com/en/men/news') {
   try {
     console.log(`🕵️‍♀️  browsing ${eshop} source`);
 
-    const products = await dedicatedbrand.scrape(eshop);
+    const brandselector = {
+        'dedicated': dedicatedbrand,
+        'mud': mudjeans,
+        'adresse': adresseparis
+    };
+
+    const scrapper = brandselector[brand];
+
+    const products = await scrapper.scrape(eshop);
 
     console.log(products);
     console.log('done');
@@ -16,6 +26,8 @@ async function sandbox (eshop = 'https://www.dedicatedbrand.com/en/men/news') {
   }
 }
 
-const [,, eshop] = process.argv;
+const [,, brand, eshop] = process.argv;
+console.log(brand);
+console.log(eshop);
 
-sandbox(eshop);
+sandbox(brand, eshop);
