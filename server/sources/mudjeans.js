@@ -24,7 +24,7 @@ const parse = data => {
                 .replace(/\s|(Buy)|€/g, '')
                 .replace(/,/g, '.')
             );
-            const link = ($(element)
+            const link = $(element)
                 .find('a')
                 .attr('href');
 
