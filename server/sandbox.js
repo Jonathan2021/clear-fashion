@@ -15,14 +15,16 @@ async function sandbox (brand='dedicated', eshop = 'https://www.dedicatedbrand.c
 
     const scrapper = brandselector[brand];
 
-    const products = await scrapper.scrape(eshop);
+    const products = await scrapper.scrape();
+    console.log("Prout");
 
-    console.log(products);
+    console.log(products.flat());
+    console.log(products.length);
+
+    Promise.all(products).then(res => console.log());
     console.log('done');
-    process.exit(0);
   } catch (e) {
     console.error(e);
-    process.exit(1);
   }
 }
 

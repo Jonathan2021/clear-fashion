@@ -1,15 +1,18 @@
-const axios = require('axios');
 const cheerio = require('cheerio');
+const helper = require('../helper.js');
+const domain = "www.dedicatedbrand.com";
+const protocol = "https://";
 
 /**
  * Parse webpage e-shop
  * @param  {String} data - html response
  * @return {Array} products
  */
-const parse = data => {
+const parse_page = (data, link) => {
     const $ = cheerio.load(data);
+    console.log(`PARSING PAGE ${link}`);
 
-    return $('.productList-container .productList')
+    return {'link': link, 'products': $('.productList-container .productList')
         .map((i, element) => {
             const name = $(element)
                 .find('.productList-title')
@@ -34,23 +37,31 @@ const parse = data => {
 
             return {name, price, link, photo, brand: "dedicated"};
         })
-        .get();
+        .get()};
 };
 
-/**
- * Scrape all the products for a given url page
- * @param  {[type]}  url
- * @return {Array|null}
- */
-module.exports.scrape = async url => {
-    const response = await axios(url);
-    const {data, status} = response;
+const parse_website = async (data, dom = domain, prot = protocol) =>
+{
+    const $ = cheerio.load(data);
+    console.log("PARSING WEBSITE");
 
-    if (status >= 200 && status < 300) {
-        return parse(data);
-    }
+    return $('.mainNavigation-link-subMenu-link')
+        .map((i, element) => {
+            const link = $(element)
+                .find('a')
+                .attr('href');
 
-    console.error(status);
+            full_url = prot.concat(dom).concat(link);
 
-    return null;
+            return helper.get_url_data(full_url).then(data => parse_page(data, link));
+        })
+        .get().flat();
+};
+
+module.exports.scrape = async (dom = domain, prot = protocol) => {
+    console.log(domain);
+    return helper.get_url_data(prot.concat(dom))
+    .then(async data => {
+        return (data != null) ? parse_website(data): null;
+    })
 };
