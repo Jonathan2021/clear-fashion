@@ -83,3 +83,41 @@ module.exports.close = async () => {
     console.error('🚨 MongoClient.close...', error);
   }
 };
+
+// Queries
+const getProductById = async (id)=>{
+    await connect();
+    const collection = db.collection('products');
+    const res = await collection.find({_id:id}).toArray();
+    return res
+}
+const getFilteredProduct = async (limit, brand, price, categorie)=>{
+    limit = limit<0?0:limit;
+    await connect();
+    const selector = Object.assign( {}, brand, price, categorie);
+    const collection = db.collection('products');
+    const n = await collection.countDocuments(selector);
+    const res = await collection.find(selector).limit(limit).toArray();
+    return {res, n}
+}
+
+
+// some other queries
+const getbrandProduct = async (brand)=>{
+    await connect();
+    const collection = db.collection('products');
+    const res = await collection.find({brand:brand}).toArray();;
+    return res
+}
+const lessThanPrice = async (price)=>{
+    await connect();
+    const collection = db.collection('products');
+    const res = await collection.find({"price":{$lte:price}}).toArray();;
+    return res
+}
+const sortedByprice = async ()=>{
+    await connect();
+    const collection = db.collection('products');
+    const res = await collection.find().sort({"price":-1}).toArray();;
+    return res
+}
