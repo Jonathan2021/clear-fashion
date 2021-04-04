@@ -89,16 +89,17 @@ module.exports.close = async () => {
 };
 
 // Queries
-const getProductById = async (id)=>{
-    await connect();
+module.exports.getProductById = async (id)=>{
+    const db = await getDB();
     const collection = db.collection('products');
     const res = await collection.find({_id:id}).toArray();
     return res
 }
-const getFilteredProduct = async (limit, brand, price, categorie)=>{
+
+module.exports.getFilteredProduct = async (limit, brand, price)=>{
     limit = limit<0?0:limit;
-    await connect();
-    const selector = Object.assign( {}, brand, price, categorie);
+    const db = await getDB();
+    const selector = Object.assign( {}, brand, price);
     const collection = db.collection('products');
     const n = await collection.countDocuments(selector);
     const res = await collection.find(selector).limit(limit).toArray();
@@ -108,19 +109,19 @@ const getFilteredProduct = async (limit, brand, price, categorie)=>{
 
 // some other queries
 const getbrandProduct = async (brand)=>{
-    await connect();
+    const db = await getDB();
     const collection = db.collection('products');
     const res = await collection.find({brand:brand}).toArray();;
     return res
 }
 const lessThanPrice = async (price)=>{
-    await connect();
+    const db = await getDB();
     const collection = db.collection('products');
     const res = await collection.find({"price":{$lte:price}}).toArray();;
     return res
 }
 const sortedByprice = async ()=>{
-    await connect();
+    const db = await getDB();
     const collection = db.collection('products');
     const res = await collection.find().sort({"price":-1}).toArray();;
     return res
