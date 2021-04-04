@@ -106,8 +106,15 @@ module.exports.getFilteredProduct = async (limit, brand, price)=>{
     return {res, n}
 }
 
+module.exports.getBrands = async () =>{
+    const db = await getDB();
+    const collection = db.collection('products');
+    const brands = await collection.distinct('brand');
+    return brands;
+}
 
 // some other queries
+/***
 const getbrandProduct = async (brand)=>{
     const db = await getDB();
     const collection = db.collection('products');
@@ -126,3 +133,4 @@ const sortedByprice = async ()=>{
     const res = await collection.find().sort({"price":-1}).toArray();;
     return res
 }
+***/

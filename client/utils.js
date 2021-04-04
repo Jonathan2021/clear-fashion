@@ -228,56 +228,56 @@ const COTELE_PARIS = [
     link: 'https://coteleparis.com//collections/tous-les-produits-cotele/products/la-baseball-cap-gris',
     price: 45,
     name: 'BASEBALL CAP - TAUPE',
-    uuid: 'af07d5a4-778d-56ad-b3f5-7001bf7f2b7d',
+    _id: 'af07d5a4-778d-56ad-b3f5-7001bf7f2b7d',
     released: '2021-01-11'
   },
   {
     link: 'https://coteleparis.com//collections/tous-les-produits-cotele/products/la-chemise-milleraie-navy',
     price: 85,
     name: 'CHEMISE MILLERAIE MIXTE - NAVY',
-    uuid: 'd62e3055-1eb2-5c09-b865-9d0438bcf075',
+    _id: 'd62e3055-1eb2-5c09-b865-9d0438bcf075',
     released: '2020-12-21'
   },
   {
     link: 'https://coteleparis.com//collections/tous-les-produits-cotele/products/la-veste-fuchsia',
     price: 110,
     name: 'VESTE - FUCHSIA',
-    uuid: 'da3858a2-95e3-53da-b92c-7f3d535a753d',
+    _id: 'da3858a2-95e3-53da-b92c-7f3d535a753d',
     released: '2020-11-17'
   },
   {
     link: 'https://coteleparis.com//collections/tous-les-produits-cotele/products/la-baseball-cap-camel',
     price: 45,
     name: 'BASEBALL CAP - CAMEL',
-    uuid: 'b56c6d88-749a-5b4c-b571-e5b5c6483131',
+    _id: 'b56c6d88-749a-5b4c-b571-e5b5c6483131',
     released: '2020-10-19'
   },
   {
     link: 'https://coteleparis.com//collections/tous-les-produits-cotele/products/la-chemise-milleraie-beige',
     price: 85,
     name: 'CHEMISE MILLERAIE MIXTE - BEIGE',
-    uuid: 'f64727eb-215e-5229-b3f9-063b5354700d',
+    _id: 'f64727eb-215e-5229-b3f9-063b5354700d',
     released: '2021-01-11'
   },
   {
     link: 'https://coteleparis.com//collections/tous-les-produits-cotele/products/la-veste-rouge-vermeil',
     price: 110,
     name: 'VESTE - ROUGE VERMEIL',
-    uuid: '4370637a-9e34-5d0f-9631-04d54a838a6e',
+    _id: '4370637a-9e34-5d0f-9631-04d54a838a6e',
     released: '2020-12-21'
   },
   {
     link: 'https://coteleparis.com//collections/tous-les-produits-cotele/products/la-chemise-milleraie-bordeaux',
     price: 85,
     name: 'CHEMISE MILLERAIE MIXTE - BORDEAUX',
-    uuid: '93d80d82-3fc3-55dd-a7ef-09a32053e36c',
+    _id: '93d80d82-3fc3-55dd-a7ef-09a32053e36c',
     released: '2020-12-21'
   },
   {
     link: 'https://coteleparis.com//collections/tous-les-produits-cotele/products/le-bob-dylan-gris',
     price: 45,
     name: 'BOB DYLAN - TAUPE',
-    uuid: 'f48810f1-a822-5ee3-b41a-be15e9a97e3f',
+    _id: 'f48810f1-a822-5ee3-b41a-be15e9a97e3f',
     released: '2020-12-21'
   }
 ]
@@ -305,30 +305,30 @@ console.log(all_price_below_100(COTELE_PARIS));
 
 
 // 🎯 TODO: Find a specific product
-// 1. Find the product with the uuid `b56c6d88-749a-5b4c-b571-e5b5c6483131`
+// 1. Find the product with the _id `b56c6d88-749a-5b4c-b571-e5b5c6483131`
 // 2. Log the product
 
 const find_element_condition = (get_attr) => (condition) => (array) => array.find(x => condition(get_attr(x)));
 
-const find_product_on_uuid = find_element_condition(x => x.uuid);
+const find_product_on__id = find_element_condition(x => x._id);
 
-console.log(find_product_on_uuid(x => x == `b56c6d88-749a-5b4c-b571-e5b5c6483131`)(COTELE_PARIS)); 
+console.log(find_product_on__id(x => x == `b56c6d88-749a-5b4c-b571-e5b5c6483131`)(COTELE_PARIS)); 
 
 // 🎯 TODO: Delete a specific product
-// 1. Delete the product with the uuid `b56c6d88-749a-5b4c-b571-e5b5c6483131`
+// 1. Delete the product with the _id `b56c6d88-749a-5b4c-b571-e5b5c6483131`
 // 2. Log the new list of product
 
 const remove_el_on_condition = (get_attr) => (condition) => (array) => array.filter(x => !condition(get_attr(x)));
 
-const remove_product_on_uuid = (uuid) => remove_el_on_condition(x => x.uuid)(x => x === uuid);
+const remove_product_on__id = (_id) => remove_el_on_condition(x => x._id)(x => x === _id);
 
-console.log(remove_product_on_uuid(`b56c6d88-749a-5b4c-b571-e5b5c6483131`)(COTELE_PARIS));
+console.log(remove_product_on__id(`b56c6d88-749a-5b4c-b571-e5b5c6483131`)(COTELE_PARIS));
 
 // 🎯 TODO: Save the favorite product
 let blueJacket = {
   'link': 'https://coteleparis.com/collections/tous-les-produits-cotele/products/la-veste-bleu-roi',
   'price': 110,
-  'uuid': 'b4b05398-fee0-4b31-90fe-a794d2ccfaaa'
+  '_id': 'b4b05398-fee0-4b31-90fe-a794d2ccfaaa'
 };
 
 // we make a copy of blueJacket to jacket
@@ -347,7 +347,7 @@ console.log(jacket);
 blueJacket = {
   'link': 'https://coteleparis.com/collections/tous-les-produits-cotele/products/la-veste-bleu-roi',
   'price': 110,
-  'uuid': 'b4b05398-fee0-4b31-90fe-a794d2ccfaaa'
+  '_id': 'b4b05398-fee0-4b31-90fe-a794d2ccfaaa'
 };
 
 // 3. Update `jacket` property with `favorite` to true WITHOUT changing blueJacket properties
