@@ -18,7 +18,6 @@ router.get('/products/search', async (req, res)=>{
         price:price.price,
         TotalNumberOfProducts:result.n,
         results:result.res
-
     })
 })
 
@@ -28,6 +27,10 @@ router.get('/products/:id',  async (req, res)=>{
     res.send(await bdd.getProductById(req.params.id))
 
 })
+
+router.get('/brands', async (req, res) => {
+    res.send(await bdd.getBrands());
+}
 
 
 module.exports = router; 
