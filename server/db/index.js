@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({path: './.env'});
 const {MongoClient} = require('mongodb');
 const fs = require('fs');
 
@@ -20,7 +20,11 @@ const getDB = module.exports.getDB = async () => {
       return database;
     }
 
-    client = await MongoClient.connect(MONGODB_URI, {'useNewUrlParser': true});
+
+    console.log(process.env.MONGO_PASSWORD);
+    const MONGODB_URI = `mongodb+srv://dbUser:${process.env.MONGO_PASSWORD}@cluster0.lmfiq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
+
+    client = await MongoClient.connect(MONGODB_URI, {'useNewUrlParser': true, 'useUnifiedTopology': true });
     database = client.db(MONGODB_DB_NAME);
 
     console.log('💽  Connected');
