@@ -3,16 +3,10 @@ const dedicatedbrand = require('./sources/dedicatedbrand');
 const mudjeans = require('./sources/mudjeans');
 const adresseparis = require('./sources/adresseparis');
 
-async function sandbox (brand='dedicated', eshop = 'https://www.dedicatedbrand.com/en/men/news') {
-  try {
-    console.log(`🕵️‍♀️  browsing ${eshop} source`);
-
-    const brandselector = {
-        'dedicated': dedicatedbrand,
-        'mud': mudjeans,
-        'adresse': adresseparis
-    };
-
+async function scrap {
+    try {
+        scrappers = [dedicatedbrand, mudjeans, adresseparis];
+        all_brands = scrappers.map(scrapper => scrapper.scrape();
     const scrapper = brandselector[brand];
 
     const products = await scrapper.scrape();
@@ -21,7 +15,13 @@ async function sandbox (brand='dedicated', eshop = 'https://www.dedicatedbrand.c
     console.log(products.flat());
     console.log(products.length);
 
-    Promise.all(products).then(res => console.log());
+    Promise.all(products).then(res => 
+    res.forEach(function (link, products) {
+        console.log(link);
+        console.log(products);
+    }
+    )
+    );
     console.log('done');
   } catch (e) {
     console.error(e);
