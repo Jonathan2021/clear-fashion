@@ -43,7 +43,7 @@ const parse_page = (data, link) => {
 
             const id = uuidv5(link, uuidv5.URL);
 
-            return {'_id': id, name, price, photo, link, brand};
+            return {'_id': id, name, price, photo, link, brand, 'released': helper.currentDate()};
         })
         .get()};
 };
