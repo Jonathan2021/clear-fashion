@@ -80,7 +80,7 @@ const apply_filters = ([...array], all_filters = filters, get_filter = x => x.cu
 const fetchProducts = async (page = 1, size = 12) => {
     try {
         const response = await fetch(
-            `http://localhost:8092/products/search?limit=${size*page}`
+            `https://server-ten-ashy.vercel.app/products/search?limit=${size*page}`
         );
         const body = await response.json();
         const total = body.TotalNumberOfProducts;  
