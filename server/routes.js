@@ -30,7 +30,7 @@ router.get('/products/:id',  async (req, res)=>{
 
 router.get('/brands', async (req, res) => {
     res.send(await bdd.getBrands());
-}
+})
 
 
 module.exports = router; 
