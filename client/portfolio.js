@@ -20,7 +20,8 @@ const noChange = (array) => array;
 // current products on the page
 let currentProducts = [];
 let currentPagination = {};
-let allBrands = [];
+//let allBrands = [];
+let allBrands = ["Adresse Paris", "Dedicated", "Mud Jeans"];
 let favorites = [];
 let filters = {
     'brand' : {'currentChange' : noChange, 'currentValue' : allBrandsOption, 'defaultChange' : noChange, 'defaultValue' : allBrandsOption},
@@ -79,22 +80,28 @@ const apply_filters = ([...array], all_filters = filters, get_filter = x => x.cu
 const fetchProducts = async (page = 1, size = 12) => {
     try {
         const response = await fetch(
-            `https://clear-fashion-api.vercel.app?page=${page}&size=${size}`
+            `http://localhost:8092/products/search?limit=${size*page}`
         );
         const body = await response.json();
-
-        if (body.success !== true) {
-            console.error(body);
-            return {currentProducts, currentPagination};
-        }
-
-        return body.data;
+        const total = body.TotalNumberOfProducts;  
+        console.log(body);
+        //if (body.success !== true) {
+        //    console.error(body);
+        //    return {currentProducts, currentPagination};
+        //}
+        
+        const result = body.results.slice(-size);
+        const pageCount = Math.ceil(total / size);
+        page = page > pageCount ? pageCount : page;
+        const meta = {'currentPage': page, 'pageCount': pageCount, 'pageSize': size, 'count': total};
+        return {result, meta};
     } catch (error) {
         console.error(error);
         return {currentProducts, currentPagination};
     }
 };
 
+/**
 const fetchBrands = async () => {
     try
     {
@@ -118,7 +125,7 @@ const fetchBrands = async () => {
         return brands;
     }
 };
-
+**/
 /**
  * Render list of products
  * @param  {Array} products
@@ -129,13 +136,14 @@ const renderProducts = products => {
     const template = products
         .map(product => {
             return (`
-      <div class="product" id=${product.uuid}>
+      <div class="product" id=${product._id}>
         <span>${product.brand}</span>
+        <a href="${product.link}"><img src="${product.photo}" alt="${product.name}" width="100" height="120"></a>
         <a href="${product.link}" target="_blank">${product.name}</a>
         <span>${product.price}</span>\n`).concat(
-            (favorites.includes(product)) ?
-            `<span><button onclick="removeFavoriteClick('${product.uuid}')">Remove favorite</button></span>` :
-            `<span><button onclick="addFavoriteClick('${product.uuid}')">Add favorite</button></span>`
+            (favorites.includes(product._id)) ?
+            `<span><button onclick="removeFavoriteClick('${product._id}')">Remove favorite</button></span>` :
+            `<span><button onclick="addFavoriteClick('${product._id}')">Add favorite</button></span>`
 
         ).concat('\n</div>');
         })
@@ -231,14 +239,14 @@ const render = (products = currentProducts, pagination = currentPagination) => {
     console.log(displayed_products);
 };
 
-const addFavoriteClick = (uuid) => {
-    favorites.push(currentProducts.find(x => x.uuid == uuid));
+const addFavoriteClick = (_id) => {
+    favorites.push(currentProducts.find(x => x._id == _id)._id);
     render();
 }
 
-const removeFavoriteClick = (uuid) => {
-    console.log(favorites.includes(uuid));
-    favorites = remove_product_on_uuid(uuid)(favorites);
+const removeFavoriteClick = (_id) => {
+    console.log(favorites.includes(_id));
+    favorites = favorites.filter(x => x !== _id);
     render();
 }
 
@@ -255,8 +263,7 @@ selectShow.addEventListener('change', event => {
     fetchProducts(currentPagination.currentPage, parseInt(event.target.value))
         .then(setCurrentProducts)
         .then(render);
-});
-
+});renderBrands();
 /**
  * Select the page to display
  * @type {[type]}
@@ -289,7 +296,7 @@ selectBrand.addEventListener('change', event => {
 /*
  * Show only favorites
  */
-const filter_favorites = (array) => array.filter(x => favorites.includes(x))
+const filter_favorites = (array) => array.filter(x => favorites.includes(x._id))
 
 checkFavoritesOnly.addEventListener('change', event => {
     filters.favorite.currentValue = checkFavoritesOnly.checked;
@@ -351,7 +358,8 @@ selectSorting.addEventListener('change', event => {
 
 document.addEventListener('DOMContentLoaded', () =>
 {
-    fetchBrands().then(brands => allBrands = brands).then(renderBrands);
+    //fetchBrands().then(brands => allBrands = brands).then(renderBrands);
+    renderBrands();
     fetchProducts()
     .then(setCurrentProducts)
     .then(render);
